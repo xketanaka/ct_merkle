@@ -287,9 +287,17 @@ p d            # => #<CTMerkle::Digest 2cf24dba...>
 ```ruby
 CTMerkle::Verifier.verify_inclusion(leaf_hash:, leaf_index:, tree_size:, inclusion_path:, root:, hasher: SHA256)
 CTMerkle::Verifier.verify_consistency(old_size:, new_size:, old_root:, new_root:, consistency_path:, hasher: SHA256)
+
+# 失敗時に例外を投げる版（証明オブジェクトの verify! が使う）
+CTMerkle::Verifier.verify_inclusion!(...)
+CTMerkle::Verifier.verify_consistency!(...)
 ```
 
 アルゴリズムは RFC 9162 §2.1.3.2（包含証明）と §2.1.4.2（整合性証明）に従う。
+
+`!` なしは `true` / `false` を返し、`!` つきは成功時に `true` を返して、失敗時は `MalformedProofError` または `RootMismatchError` を投げる。証明オブジェクトの `verify` / `verify!` も、同じように `hasher:` を受け取る。
+
+ハッシュ値（葉、ルート、パスの各要素）の長さが `hasher.digest_size` と違う場合は、常に `MalformedProofError` とする。Go の `transparency-dev/merkle` は `old_size == new_size` のときに長さを確認しないため、この点だけ結果が異なる（`test/vectors_test.rb` の `DEVIATIONS` を参照）。
 
 ## 10. `CTMerkle::Hasher`
 
