@@ -1,0 +1,7 @@
+.git
+.github
+pkg
+tmp
+coverage
+*.gem
+Gemfile.lock
